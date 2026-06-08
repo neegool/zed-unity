@@ -1,0 +1,14 @@
+{
+  "name": "@gamebayoumy/uss-language-server-release",
+  "version": "0.1.1",
+  "private": true,
+  "description": "Release tooling for uss-language-server",
+  "scripts": {
+    "changeset": "changeset",
+    "version-packages": "changeset version && node scripts/sync-version.mjs",
+    "sync-version": "node scripts/sync-version.mjs"
+  },
+  "devDependencies": {
+    "@changesets/cli": "2.31.0"
+  }
+}
