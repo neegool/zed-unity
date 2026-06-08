@@ -1,0 +1,20 @@
+{
+    "name": "@gamebayoumy/zed-unity-extension",
+    "version": "0.2.0",
+    "private": true,
+    "description": "Monorepo release tooling for the Zed Unity extension, Unity package, and USS language server",
+    "workspaces": [
+        "crates/*"
+    ],
+    "scripts": {
+        "changeset": "changeset",
+        "version-packages": "changeset version && npm run sync-version",
+        "sync-version": "node scripts/sync-version.mjs && node crates/uss-language-server/scripts/sync-version.mjs",
+        "check:extension": "cargo check",
+        "check:uss": "cargo check --manifest-path crates/uss-language-server/Cargo.toml",
+        "check:unity-package": "node scripts/validate-unity-package.mjs"
+    },
+    "devDependencies": {
+        "@changesets/cli": "2.31.0"
+    }
+}

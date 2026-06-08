@@ -1,0 +1,61 @@
+name: CI
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+
+jobs:
+    extension:
+        name: Zed extension
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: dtolnay/rust-toolchain@stable
+              with:
+                  targets: wasm32-wasip2
+                  components: rustfmt, clippy
+            - run: cargo fmt --all -- --check
+            - run: cargo clippy -- -D warnings
+            - run: cargo check
+            - run: cargo check --target wasm32-wasip2
+
+    uss-language-server:
+        name: USS language server
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: dtolnay/rust-toolchain@stable
+              with:
+                  components: rustfmt, clippy
+            - run: cargo fmt --all -- --check
+              working-directory: crates/uss-language-server
+            - run: cargo clippy -- -D warnings
+              working-directory: crates/uss-language-server
+            - run: cargo test
+              working-directory: crates/uss-language-server
+            - run: cargo check
+              working-directory: crates/uss-language-server
+
+    unity-package:
+        name: Unity package manifest
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 22
+            - run: node scripts/validate-unity-package.mjs
+            - run: npm view com.unity.ide.visualstudio version --registry https://packages.unity.com
+
+    changesets:
+        name: Changesets and version sync
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 22
+            - run: npm install
+            - run: npm run sync-version

@@ -25,12 +25,11 @@ extension.wasm
 
 # Local development
 bin/
-build.sh
 test-files/
 debug_adapter_schemas/
 
+# Node / release tooling
+node_modules/
+
 # Downloaded grammars (Zed fetches these)
 grammars/
-
-# Local USS language server (separate repo)
-uss-language-server/
