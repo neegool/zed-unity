@@ -8,11 +8,9 @@ use zed_extension_api::{
 /// Provides comprehensive Unity development support:
 /// - Roslyn-based C# language server (csharp-language-server)
 /// - USS (Unity Style Sheets) language server
-/// - Unity debugging via DAP (Mono debugger)
 struct UnityExtension {
     cached_csharp_binary_path: Option<String>,
     cached_uss_binary_path: Option<String>,
-    cached_netcoredbg_path: Option<String>,
 }
 
 impl UnityExtension {
@@ -35,7 +33,6 @@ impl UnityExtension {
                 zed::Architecture::X8664 => "win-x64",
                 _ => return Err(format!("Unsupported Windows architecture: {:?}", arch)),
             },
-            _ => return Err(format!("Unsupported operating system: {:?}", os)),
         };
 
         let (os_type, _) = zed::current_platform();
@@ -54,6 +51,7 @@ impl UnityExtension {
         // Asset names use Rust target triple format
         let (platform, ext) = match os {
             Os::Linux => match arch {
+                zed::Architecture::Aarch64 => ("aarch64-unknown-linux-gnu", "tar.gz"),
                 zed::Architecture::X8664 => ("x86_64-unknown-linux-gnu", "tar.gz"),
                 _ => return Err(format!("Unsupported Linux architecture: {:?}", arch)),
             },
@@ -63,38 +61,13 @@ impl UnityExtension {
                 _ => return Err(format!("Unsupported macOS architecture: {:?}", arch)),
             },
             Os::Windows => match arch {
+                zed::Architecture::Aarch64 => ("aarch64-pc-windows-msvc", "zip"),
                 zed::Architecture::X8664 => ("x86_64-pc-windows-msvc", "zip"),
                 _ => return Err(format!("Unsupported Windows architecture: {:?}", arch)),
             },
-            _ => return Err(format!("Unsupported operating system: {:?}", os)),
         };
 
         Ok(format!("csharp-language-server-{}.{}", platform, ext))
-    }
-
-    /// Get the appropriate netcoredbg release asset name for the current platform
-    fn get_netcoredbg_asset_name(&self) -> Result<String, String> {
-        let (os, arch) = zed::current_platform();
-
-        let platform = match os {
-            Os::Linux => match arch {
-                zed::Architecture::Aarch64 => "linux-arm64",
-                zed::Architecture::X8664 => "linux-amd64",
-                _ => return Err(format!("Unsupported Linux architecture: {:?}", arch)),
-            },
-            Os::Mac => match arch {
-                zed::Architecture::Aarch64 => "osx-arm64",
-                zed::Architecture::X8664 => "osx-amd64",
-                _ => return Err(format!("Unsupported macOS architecture: {:?}", arch)),
-            },
-            Os::Windows => match arch {
-                zed::Architecture::X8664 => "win64",
-                _ => return Err(format!("Unsupported Windows architecture: {:?}", arch)),
-            },
-            _ => return Err(format!("Unsupported operating system: {:?}", os)),
-        };
-
-        Ok(format!("netcoredbg-{}.tar.gz", platform))
     }
 
     /// Download and install csharp-language-server
@@ -137,53 +110,6 @@ impl UnityExtension {
 
         zed::download_file(&asset.download_url, &version_dir, download_type)
             .map_err(|e| format!("Failed to download csharp-language-server: {}", e))?;
-
-        // Make executable on Unix systems (permission is set by extraction)
-        // The tar.gz should preserve file permissions
-
-        Ok(binary_path)
-    }
-
-    /// Download and install netcoredbg (Debug Adapter for .NET/Mono)
-    fn install_netcoredbg(&self) -> Result<String, String> {
-        let asset_name = self.get_netcoredbg_asset_name()?;
-
-        // Get the latest release from GitHub
-        let release = zed::latest_github_release(
-            "Samsung/netcoredbg",
-            zed::GithubReleaseOptions {
-                require_assets: true,
-                pre_release: false,
-            },
-        )?;
-
-        let asset = release
-            .assets
-            .iter()
-            .find(|a| a.name.contains(&asset_name.replace(".tar.gz", "")))
-            .ok_or_else(|| format!("No asset found for platform: {}", asset_name))?;
-
-        let version_dir = format!("netcoredbg-{}", release.version);
-
-        let (os, _) = zed::current_platform();
-        let binary_name = match os {
-            Os::Windows => "netcoredbg.exe",
-            _ => "netcoredbg",
-        };
-        let binary_path = format!("{}/netcoredbg/{}", version_dir, binary_name);
-
-        // Check if already downloaded
-        if fs::metadata(&binary_path).is_ok() {
-            return Ok(binary_path);
-        }
-
-        // Download and extract
-        zed::download_file(
-            &asset.download_url,
-            &version_dir,
-            DownloadedFileType::GzipTar,
-        )
-        .map_err(|e| format!("Failed to download netcoredbg: {}", e))?;
 
         // Make executable on Unix systems (permission is set by extraction)
         // The tar.gz should preserve file permissions
@@ -241,7 +167,7 @@ impl UnityExtension {
 
         // Get the latest release from GitHub
         let release = zed::latest_github_release(
-            "GameBayoumy/uss-language-server",
+            "GameBayoumy/zed-unity",
             zed::GithubReleaseOptions {
                 require_assets: true,
                 pre_release: false,
@@ -346,17 +272,6 @@ impl UnityExtension {
             env: Default::default(),
         })
     }
-
-    /// Get debug adapter binary for Unity debugging
-    fn get_unity_debugger(&mut self) -> Result<String, String> {
-        if let Some(path) = &self.cached_netcoredbg_path {
-            return Ok(path.clone());
-        }
-
-        let path = self.install_netcoredbg()?;
-        self.cached_netcoredbg_path = Some(path.clone());
-        Ok(path)
-    }
 }
 
 impl zed::Extension for UnityExtension {
@@ -364,7 +279,6 @@ impl zed::Extension for UnityExtension {
         Self {
             cached_csharp_binary_path: None,
             cached_uss_binary_path: None,
-            cached_netcoredbg_path: None,
         }
     }
 

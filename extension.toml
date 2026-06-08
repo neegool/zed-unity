@@ -1,9 +1,9 @@
 id = "zed-unity"
 name = "Unity Editor Extension"
-version = "0.1.0"
+version = "0.2.0"
 schema_version = 1
 authors = ["Sharif Bayoumy <contact@sharifbayoumy.com>"]
-description = "Comprehensive Unity development support for Zed: Roslyn C# LSP, USS language server, ShaderLab/HLSL, and Unity debugging"
+description = "Unity development support for Zed: Roslyn C# language server integration, USS language server support, and Unity project tooling"
 repository = "https://github.com/gamebayoumy/zed-unity"
 
 # Tree-sitter grammars
