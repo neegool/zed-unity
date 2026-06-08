@@ -1,0 +1,34 @@
+{
+  "name": "com.gamebayoumy.zed-unity",
+  "version": "0.2.0",
+  "displayName": "Zed Editor Integration",
+  "description": "Integrates Zed as an external code editor for Unity with project setup, file sync, and C# project generation for Zed language tooling",
+  "unity": "2021.3",
+  "unityRelease": "0f1",
+  "documentationUrl": "https://github.com/GameBayoumy/zed-unity/tree/main/packages/com.gamebayoumy.zed-unity#readme",
+  "changelogUrl": "https://github.com/GameBayoumy/zed-unity/blob/main/packages/com.gamebayoumy.zed-unity/CHANGELOG.md",
+  "licensesUrl": "https://github.com/GameBayoumy/zed-unity/blob/main/packages/com.gamebayoumy.zed-unity/LICENSE.md",
+  "dependencies": {
+    "com.unity.ide.visualstudio": "2.0.27"
+  },
+  "keywords": [
+    "editor",
+    "zed",
+    "external-editor",
+    "code-editor",
+    "roslyn",
+    "lsp"
+  ],
+  "author": {
+    "name": "Sharif Bayoumy",
+    "email": "contact@sharifbayoumy.com",
+    "url": "https://github.com/GameBayoumy"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GameBayoumy/zed-unity.git",
+    "directory": "packages/com.gamebayoumy.zed-unity"
+  },
+  "type": "tool",
+  "samples": []
+}
