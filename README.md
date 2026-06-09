@@ -6,23 +6,27 @@ Monorepo for Unity development support in [Zed](https://zed.dev).
 
 | Path | Purpose |
 | --- | --- |
-| `/` | Zed extension |
+| `/` | Zed extension for Unity USS/TSS support |
 | `packages/com.gamebayoumy.zed-unity` | Unity Package Manager package |
 | `crates/uss-language-server` | USS language server downloaded by the Zed extension |
 
 ## Features
 
-- C# language server integration through [`csharp-language-server`](https://github.com/SofusA/csharp-language-server)
 - USS / TSS language support for Unity UI Toolkit files
 - Automatic USS language server download from GitHub releases
-- Tree-sitter syntax highlighting for C# and USS
-- Companion Unity package integration for external editor setup and project file generation
+- Tree-sitter syntax highlighting for USS / TSS files
+- Companion Unity package integration for external editor setup and Unity project file generation
+- Roslyn-friendly Unity project settings for Zed's official C# extension
+
+C# support is provided by Zed's official C# extension, which uses `roslyn-language-server` by default. This project focuses on the Unity-specific glue around that integration.
 
 ## Install
 
-### Zed extension
+### Zed extensions
 
-Install from Zed's extension manager once published. For local development:
+Install Zed's official C# extension for `.cs` / Roslyn support.
+
+For local development of this extension:
 
 ```sh
 rustup target add wasm32-wasip2
@@ -33,13 +37,13 @@ Then in Zed, install this folder as a dev extension.
 
 ### Unity package
 
-Install the companion Unity package for External Script Editor registration and project setup:
+Install the Unity package for External Script Editor registration and project setup:
 
 ```text
 https://github.com/GameBayoumy/zed-unity.git?path=/packages/com.gamebayoumy.zed-unity
 ```
 
-After OpenUPM publishing, users can install with:
+Or use OpenUPM with:
 
 ```sh
 openupm add com.gamebayoumy.zed-unity
@@ -53,33 +57,46 @@ Tools > Zed > Setup / Health Check
 
 ## Configuration
 
-To override the C# language server binary in Zed settings:
+The Unity package can create a Unity-friendly `.zed/settings.json` with Roslyn enabled for C#:
 
 ```json
 {
+  "languages": {
+    "CSharp": {
+      "language_servers": ["roslyn", "..."]
+    }
+  },
   "lsp": {
-    "csharp-language-server": {
-      "binary": {
-        "path": "/path/to/csharp-language-server",
-        "arguments": []
+    "roslyn": {
+      "settings": {
+        "csharp|projects": {
+          "dotnet_enable_automatic_restore": true
+        },
+        "csharp|background_analysis": {
+          "dotnet_analyzer_diagnostics_scope": "openFiles",
+          "dotnet_compiler_diagnostics_scope": "openFiles"
+        }
       }
     }
   }
 }
 ```
 
+To override the Roslyn binary itself, configure Zed's official C# extension using the `roslyn` LSP settings documented at <https://zed.dev/docs/languages/csharp>.
+
 ## Supported files
 
-| Extension | Language |
+| Extension | Support |
 | --- | --- |
-| `.cs` | C# |
-| `.uss` | Unity Style Sheets |
-| `.tss` | Unity Theme Style Sheets |
+| `.cs` | C# via Zed's official C# extension and Roslyn |
+| `.uss` | Unity Style Sheets via this extension |
+| `.tss` | Unity Theme Style Sheets via this extension |
 
 ## Requirements
 
 - Zed with Rust extension support
-- Unity 2021.3 or newer for the companion Unity package
+- Zed's official C# extension for C# / Roslyn support
+- Unity 2021.3 or newer for the Unity package
 - .NET SDK for C# language server functionality
 
 ## Release workflow
@@ -94,7 +111,11 @@ npm run version-packages
 
 `npm run version-packages` updates the Zed extension, Unity package, and USS language server versions together where applicable.
 
-See `docs/PUBLISHING.md` for GitHub release and OpenUPM instructions.
+See `docs/PUBLISHING.md` for release and OpenUPM instructions.
+
+## Contributing
+
+See `CONTRIBUTING.md` for repository layout, validation commands, and contribution guidelines.
 
 ## Roadmap
 

@@ -50,6 +50,7 @@ namespace Zed.Unity.Editor
             }
 
             MergeRecommendedFileScanExclusions();
+            MergeRecommendedRoslynSettings();
         }
 
         private static void MergeRecommendedFileScanExclusions()
@@ -86,15 +87,85 @@ namespace Zed.Unity.Editor
             Debug.Log($"[Zed Unity] Updated Unity file scan exclusions in {ZedUtils.FullPathToAssetPath(SettingsFilePath)}.");
         }
 
+        private static void MergeRecommendedRoslynSettings()
+        {
+            string existing = File.ReadAllText(SettingsFilePath, Encoding.UTF8);
+            string updated = existing;
+            bool changed = false;
+
+            if (!existing.Contains("\"languages\""))
+            {
+                updated = InsertTopLevelProperty(updated, BuildRecommendedLanguagesJson(2));
+                changed = true;
+            }
+
+            if (!existing.Contains("\"lsp\""))
+            {
+                updated = InsertTopLevelProperty(updated, BuildRecommendedRoslynLspJson(2));
+                changed = true;
+            }
+
+            if (!changed)
+                return;
+
+            File.WriteAllText(SettingsFilePath, updated, Encoding.UTF8);
+            AssetDatabase.Refresh();
+            Debug.Log($"[Zed Unity] Added Roslyn-friendly C# settings to {ZedUtils.FullPathToAssetPath(SettingsFilePath)}.");
+        }
+
         private static string BuildDefaultSettingsJson()
         {
-            return "{\n" + BuildJsonArray("file_scan_exclusions", RecommendedFileScanExclusions, 2) + "\n}\n";
+            return "{\n" +
+                   BuildJsonArray("file_scan_exclusions", RecommendedFileScanExclusions, 2) + ",\n" +
+                   BuildRecommendedLanguagesJson(2) + ",\n" +
+                   BuildRecommendedRoslynLspJson(2) +
+                   "\n}\n";
+        }
+
+        private static string BuildRecommendedLanguagesJson(int indent)
+        {
+            string propertyIndent = new string(' ', indent);
+            string nestedIndent = new string(' ', indent + 2);
+            string arrayIndent = new string(' ', indent + 4);
+
+            return propertyIndent + "\"languages\": {\n" +
+                   nestedIndent + "\"CSharp\": {\n" +
+                   arrayIndent + "\"language_servers\": [\"roslyn\", \"...\"]\n" +
+                   nestedIndent + "}\n" +
+                   propertyIndent + "}";
+        }
+
+        private static string BuildRecommendedRoslynLspJson(int indent)
+        {
+            string propertyIndent = new string(' ', indent);
+            string level1 = new string(' ', indent + 2);
+            string level2 = new string(' ', indent + 4);
+            string level3 = new string(' ', indent + 6);
+            string level4 = new string(' ', indent + 8);
+
+            return propertyIndent + "\"lsp\": {\n" +
+                   level1 + "\"roslyn\": {\n" +
+                   level2 + "\"settings\": {\n" +
+                   level3 + "\"csharp|projects\": {\n" +
+                   level4 + "\"dotnet_enable_automatic_restore\": true\n" +
+                   level3 + "},\n" +
+                   level3 + "\"csharp|background_analysis\": {\n" +
+                   level4 + "\"dotnet_analyzer_diagnostics_scope\": \"openFiles\",\n" +
+                   level4 + "\"dotnet_compiler_diagnostics_scope\": \"openFiles\"\n" +
+                   level3 + "}\n" +
+                   level2 + "}\n" +
+                   level1 + "}\n" +
+                   propertyIndent + "}";
         }
 
         private static string InsertFileScanExclusions(string json, IEnumerable<string> exclusions)
         {
+            return InsertTopLevelProperty(json, BuildJsonArray("file_scan_exclusions", exclusions, 2));
+        }
+
+        private static string InsertTopLevelProperty(string json, string property)
+        {
             string trimmed = json.Trim();
-            string property = BuildJsonArray("file_scan_exclusions", exclusions, 2);
 
             if (string.IsNullOrEmpty(trimmed) || trimmed == "{}")
                 return "{\n" + property + "\n}\n";

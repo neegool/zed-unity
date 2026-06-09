@@ -1,22 +1,22 @@
-# Publishing Zed Unity
+# Release Guide
 
-This repository is a monorepo containing:
+This is the canonical release guide for the `GameBayoumy/zed-unity` monorepo.
 
-- Zed extension at the repository root
-- Unity package at `packages/com.gamebayoumy.zed-unity`
-- USS language server at `crates/uss-language-server`
+## What this repo releases
+
+| Artifact | Source | Release destination |
+| --- | --- | --- |
+| Zed Unity extension archive | repository root | GitHub release asset |
+| Unity package | `packages/com.gamebayoumy.zed-unity` | OpenUPM / Unity Git URL |
+| USS language server binaries | `crates/uss-language-server` | GitHub release assets downloaded by the Zed extension |
+
+C# support is intentionally not built or distributed from this repo. Users should install Zed's official C# extension, which uses Roslyn by default.
 
 ## Versioning
 
-Use Changesets from the repository root:
+Use one bare semver tag for the whole monorepo, for example `0.3.0`.
 
-```sh
-npm install
-npm run changeset
-npm run version-packages
-```
-
-`npm run version-packages` updates:
+The release version should match across:
 
 - root `package.json`
 - root `Cargo.toml`
@@ -25,28 +25,42 @@ npm run version-packages
 - `crates/uss-language-server/package.json`
 - `crates/uss-language-server/Cargo.toml`
 
+To sync versions from the root `package.json` after changing it:
+
+```sh
+npm run sync-version
+```
+
 ## Validation
 
-From the repository root:
+Run from the repository root before tagging:
 
 ```sh
-npm run check:unity-package
+cargo fmt --all -- --check
 cargo check
 cargo check --manifest-path crates/uss-language-server/Cargo.toml
+npm run check:unity-package
 ```
 
-CI additionally checks formatting, clippy, tests, and the Zed extension WASI target.
-
-## GitHub release
-
-Create one tag for the whole monorepo:
+For the actual Zed extension WASM build:
 
 ```sh
-git tag v0.2.0
-git push origin main --tags
+rustup target add wasm32-wasip2
+cargo build --release --target wasm32-wasip2
 ```
 
-The root release workflow publishes:
+If your system `cargo`/`rustc` is not managed by rustup, use the rustup toolchain explicitly so the WASI target can be found.
+
+## GitHub release assets
+
+Create and push a bare semver tag:
+
+```sh
+git tag 0.3.0
+git push origin 0.3.0
+```
+
+The release workflow is triggered by tags matching `x.y.z` and uploads:
 
 - `zed-unity-extension.tar.gz`
 - `uss-language-server-linux-x64.tar.gz`
@@ -55,9 +69,9 @@ The root release workflow publishes:
 - `uss-language-server-darwin-arm64.tar.gz`
 - `uss-language-server-win-x64.zip`
 
-The Zed extension downloads USS language server assets from `GameBayoumy/zed-unity` releases.
+Do not use `v0.3.0` tags for new releases.
 
-## Publishing the Unity package to OpenUPM
+## OpenUPM
 
 Package name:
 
@@ -71,45 +85,27 @@ Package path:
 packages/com.gamebayoumy.zed-unity
 ```
 
-Steps:
+OpenUPM indexes GitHub tags. After the `0.3.0` GitHub release exists, OpenUPM should pick up the Unity package from the package path above.
 
-1. Push the monorepo to GitHub.
-2. Create a version tag/release, for example `v0.2.0`.
-3. Go to <https://openupm.com/packages/add/>.
-4. Submit:
+## Unity Git URL installs
 
-   ```text
-   https://github.com/GameBayoumy/zed-unity
-   ```
-
-5. If OpenUPM asks for a package path, enter:
-
-   ```text
-   packages/com.gamebayoumy.zed-unity
-   ```
-
-6. After indexing, install with:
-
-   ```sh
-   openupm add com.gamebayoumy.zed-unity
-   ```
-
-## Unity Git URL install
-
-Use this URL in Unity Package Manager:
+Latest from the default branch:
 
 ```text
 https://github.com/GameBayoumy/zed-unity.git?path=/packages/com.gamebayoumy.zed-unity
 ```
 
-Pinned to a tag:
+Pinned to a release tag:
 
 ```text
-https://github.com/GameBayoumy/zed-unity.git?path=/packages/com.gamebayoumy.zed-unity#v0.2.0
+https://github.com/GameBayoumy/zed-unity.git?path=/packages/com.gamebayoumy.zed-unity#0.3.0
 ```
 
-## Zed extension publishing
+## Release checklist
 
-Submit/update this repository in Zed's extension registry according to Zed's current extension publishing process. Keep `extension.toml` at the repository root.
-
-Do not advertise debugger, ShaderLab, or UXML support as shipped until those paths are implemented and validated.
+1. Update versions to the target release.
+2. Run validation commands.
+3. Push `main`.
+4. Push the bare semver tag.
+5. Confirm all GitHub release assets exist.
+6. Confirm OpenUPM indexes the Unity package version.

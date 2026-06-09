@@ -29,5 +29,6 @@ replaceVersion(
   (value) => `version = "${value}"`
 );
 updateJsonVersion("packages/com.gamebayoumy.zed-unity/package.json");
+updateJsonVersion("crates/uss-language-server/package.json");
 
 console.log(`Synced Zed Unity monorepo version to ${version}`);

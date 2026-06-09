@@ -7,8 +7,8 @@ Unity package that registers [Zed](https://zed.dev) as an External Script Editor
 - Registers Zed as a Unity External Script Editor
 - Opens scripts at the requested line/column from Unity
 - Detects common Zed installs across Linux, macOS, and Windows
-- Creates/merges Unity-friendly `.zed/settings.json`
-- Regenerates `.sln` / `.csproj` files through Unity's maintained Visual Studio project generator
+- Creates/merges Unity-friendly `.zed/settings.json` with Roslyn-friendly C# defaults
+- Regenerates `.sln` / `.csproj` files through Unity's maintained Visual Studio project generator for Zed's official C# extension
 - Refreshes Unity when files are changed externally
 - Provides `Tools > Zed > Setup / Health Check`
 
@@ -28,7 +28,7 @@ https://github.com/GameBayoumy/zed-unity.git?path=/packages/com.gamebayoumy.zed-
 
 ### OpenUPM
 
-After publishing to OpenUPM:
+With OpenUPM:
 
 ```sh
 openupm add com.gamebayoumy.zed-unity
@@ -37,11 +37,12 @@ openupm add com.gamebayoumy.zed-unity
 ## Setup
 
 1. Install the Unity package.
-2. Install the Zed extension in Zed.
-3. In Unity, open **Edit > Preferences > External Tools**.
-4. Set **External Script Editor** to **Zed**.
-5. Run **Tools > Zed > Setup / Health Check**.
-6. Click **Fix Everything Possible**.
+2. Install Zed's official C# extension for `.cs` / Roslyn support.
+3. Install the Zed Unity extension for USS / TSS support.
+4. In Unity, open **Edit > Preferences > External Tools**.
+5. Set **External Script Editor** to **Zed**.
+6. Run **Tools > Zed > Setup / Health Check**.
+7. Click **Fix Everything Possible**.
 
 ## Menu commands
 
@@ -63,7 +64,7 @@ openupm add com.gamebayoumy.zed-unity
 | Generate .sln File | On | Enable Unity project generation |
 | Generate .csproj Files | On | Enable Unity project generation |
 
-Project generation is delegated to `com.unity.ide.visualstudio` for better Unity compatibility.
+Project generation is delegated to `com.unity.ide.visualstudio` so Roslyn can consume Unity-compatible `.sln` / `.csproj` inputs.
 
 ## Supported platforms
 
@@ -75,14 +76,7 @@ Project generation is delegated to `com.unity.ide.visualstudio` for better Unity
 
 ## Release workflow
 
-This package uses Changesets for changelog/version management:
-
-```sh
-npx changeset
-npx changeset version
-```
-
-For OpenUPM, publish by creating a GitHub release/tag that matches the package version, for example `v0.2.0`.
+This package is versioned from the monorepo root. See `../../docs/PUBLISHING.md` for the canonical release guide.
 
 ## License
 

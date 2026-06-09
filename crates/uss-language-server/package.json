@@ -1,6 +1,6 @@
 {
   "name": "@gamebayoumy/uss-language-server-release",
-  "version": "0.1.1",
+  "version": "0.3.0",
   "private": true,
   "description": "Release tooling for uss-language-server",
   "scripts": {

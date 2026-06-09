@@ -4,6 +4,17 @@ All notable changes to the Zed Unity extension are documented here.
 
 This project follows [Semantic Versioning](https://semver.org/) and uses [Changesets](https://github.com/changesets/changesets) for release notes.
 
+## [0.3.0] - 2026-06-09
+
+### Changed
+
+- C# support now relies on Zed's official C# extension and Roslyn instead of the archived `csharp-language-server` wrapper.
+- Unity-generated `.zed/settings.json` now includes Roslyn-friendly C# defaults for new projects.
+
+### Removed
+
+- Removed local C# language configuration and automatic `csharp-language-server` download support from the Zed Unity extension.
+
 ## [0.2.1] - 2026-06-08
 
 ### Fixed

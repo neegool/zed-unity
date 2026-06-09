@@ -1,8 +1,8 @@
 {
   "name": "com.gamebayoumy.zed-unity",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "displayName": "Zed Editor Integration",
-  "description": "Integrates Zed as an external code editor for Unity with project setup, file sync, and C# project generation for Zed language tooling",
+  "description": "Integrates Zed as an external code editor for Unity with project setup, file sync, and Roslyn-friendly C# project generation",
   "unity": "2021.3",
   "unityRelease": "0f1",
   "license": "MIT",

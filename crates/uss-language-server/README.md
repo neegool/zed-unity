@@ -1,138 +1,54 @@
 # USS Language Server
 
-[![Release](https://img.shields.io/github/v/release/GameBayoumy/uss-language-server)](https://github.com/GameBayoumy/uss-language-server/releases)
-[![CI](https://github.com/GameBayoumy/uss-language-server/actions/workflows/ci.yml/badge.svg)](https://github.com/GameBayoumy/uss-language-server/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+Language Server Protocol implementation for USS/TSS files used by Unity UI Toolkit.
 
-A Language Server Protocol (LSP) implementation for USS (Unity Style Sheets) - Unity's CSS-like styling language for UI Toolkit.
+This crate is maintained inside the [`GameBayoumy/zed-unity`](https://github.com/GameBayoumy/zed-unity) monorepo. The Zed Unity extension downloads release binaries from the monorepo GitHub releases.
 
-- **Auto-completion** for USS properties, values, selectors, and pseudo-classes
-- **Hover documentation** for properties and values
-- **Diagnostics** for syntax errors and unknown properties
-- **Go to Definition** for USS variables
-- **Document Formatting**
-- **Color Preview** support
+## Features
 
-## Supported USS Features
+- Completion for USS properties, values, selectors, and pseudo-classes
+- Hover documentation for properties and values
+- Diagnostics for syntax errors and unknown properties
+- Go to definition for USS variables
+- Document formatting
+- Color preview support
 
-### Properties
-- All standard USS properties
-- Unity-specific properties (`-unity-font-style`, `-unity-text-align`, etc.)
-- Custom USS variables (`--my-variable`)
+## Release assets
 
-### Selectors
-- Type selectors (`Button`, `Label`, `VisualElement`)
-- Class selectors (`.my-class`)
-- ID selectors (`#my-id`)
-- Pseudo-classes (`:hover`, `:active`, `:focus`, `:disabled`, `:checked`, `:selected`)
-- Descendant and child combinators
+The Zed Unity extension expects these asset names in monorepo GitHub releases:
 
-### Values
-- Colors (hex, rgb, rgba, named colors)
-- Units (px, %, em)
-- Keywords (auto, none, flex, etc.)
-- Functions (url(), var(), rgb(), rgba())
-
-## Installation
-
-### Pre-built Binaries
-
-Download the latest release for your platform from the [Releases](https://github.com/GameBayoumy/uss-language-server/releases) page.
-
-| Platform | Binary |
-|----------|--------|
+| Platform | Asset |
+| --- | --- |
 | Linux x64 | `uss-language-server-linux-x64.tar.gz` |
 | Linux ARM64 | `uss-language-server-linux-arm64.tar.gz` |
 | macOS x64 | `uss-language-server-darwin-x64.tar.gz` |
 | macOS ARM64 | `uss-language-server-darwin-arm64.tar.gz` |
 | Windows x64 | `uss-language-server-win-x64.zip` |
 
-### From Source
-
-```bash
-git clone https://github.com/GameBayoumy/uss-language-server.git
-cd uss-language-server
-cargo build --release
-```
-
-The binary will be at `target/release/uss-language-server`.
-
-## Usage
-
-### Zed Editor
-
-The [zed-unity](https://github.com/GameBayoumy/zed-unity) extension automatically downloads and uses this language server.
-
-### Other Editors
-
-Configure your editor's LSP client to run `uss-language-server` with stdio communication:
-
-```bash
-uss-language-server
-```
-
-The server communicates over stdin/stdout using the Language Server Protocol.
-
-### VS Code (Manual)
-
-Add to your `settings.json`:
-
-```json
-{
-  "languageServerExample.serverPath": "/path/to/uss-language-server"
-}
-```
-
-### Neovim (with nvim-lspconfig)
-
-```lua
-local lspconfig = require('lspconfig')
-local configs = require('lspconfig.configs')
-
-configs.uss = {
-  default_config = {
-    cmd = { 'uss-language-server' },
-    filetypes = { 'uss' },
-    root_dir = lspconfig.util.root_pattern('.git', '*.sln', '*.csproj'),
-  },
-}
-
-lspconfig.uss.setup{}
-```
-
-## Environment Variables
-
-- `RUST_LOG`: Set logging level (e.g., `RUST_LOG=debug uss-language-server`)
+Do not change these names without updating `src/lib.rs` in the Zed extension.
 
 ## Development
 
-### Building
+From the monorepo root:
 
-```bash
-cargo build
+```sh
+cargo check --manifest-path crates/uss-language-server/Cargo.toml
+cargo test --manifest-path crates/uss-language-server/Cargo.toml
+cargo build --release --manifest-path crates/uss-language-server/Cargo.toml
 ```
 
-### Running Tests
+The release binary is written under `target/release/uss-language-server` for native builds.
 
-```bash
-cargo test
+## Usage outside Zed
+
+Configure your editor's LSP client to run the binary over stdio:
+
+```sh
+uss-language-server
 ```
 
-### Release Build
-
-```bash
-cargo build --release
-```
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
+Set `RUST_LOG=debug` when you need verbose server logs.
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) for details.
-
-## Related Projects
-
-- [zed-unity](https://github.com/GameBayoumy/zed-unity) - Unity development extension for Zed
-- [Unity UI Toolkit Documentation](https://docs.unity3d.com/Manual/UIE-USS.html)
+MIT License - see the monorepo license.

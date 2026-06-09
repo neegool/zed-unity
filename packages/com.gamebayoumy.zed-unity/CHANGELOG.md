@@ -4,6 +4,13 @@ All notable changes to this package are documented here.
 
 This package follows [Semantic Versioning](https://semver.org/) and uses [Changesets](https://github.com/changesets/changesets) for release notes.
 
+## [0.3.0] - 2026-06-09
+
+### Changed
+
+- Generated `.zed/settings.json` now includes Roslyn-friendly C# defaults for Zed's official C# extension.
+- Documentation now directs C# LSP setup through Zed's official C# extension and Roslyn.
+
 ## [0.2.1] - 2026-06-08
 
 ### Fixed
