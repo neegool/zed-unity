@@ -1,6 +1,6 @@
 {
     "name": "@gamebayoumy/zed-unity-extension",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "private": true,
     "description": "Monorepo release tooling for the Zed Unity extension, Unity package, and USS language server",
     "workspaces": [

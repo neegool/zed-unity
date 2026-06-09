@@ -1,6 +1,6 @@
 id = "zed-unity"
 name = "Unity Editor Extension"
-version = "0.2.0"
+version = "0.2.1"
 schema_version = 1
 authors = ["Sharif Bayoumy <contact@sharifbayoumy.com>"]
 description = "Unity development support for Zed: Roslyn C# language server integration, USS language server support, and Unity project tooling"

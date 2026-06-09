@@ -4,6 +4,12 @@ All notable changes to this package are documented here.
 
 This package follows [Semantic Versioning](https://semver.org/) and uses [Changesets](https://github.com/changesets/changesets) for release notes.
 
+## [0.2.1] - 2026-06-08
+
+### Fixed
+
+- Added explicit `MIT` license metadata so OpenUPM displays the package license correctly.
+
 ## [0.2.0] - 2026-06-08
 
 ### Added

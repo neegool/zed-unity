@@ -4,6 +4,12 @@ All notable changes to the Zed Unity extension are documented here.
 
 This project follows [Semantic Versioning](https://semver.org/) and uses [Changesets](https://github.com/changesets/changesets) for release notes.
 
+## [0.2.1] - 2026-06-08
+
+### Fixed
+
+- Added corrected release metadata for the Unity package and monorepo release assets.
+
 ## [0.2.0] - 2026-06-08
 
 ### Added
