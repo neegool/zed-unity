@@ -44,6 +44,27 @@ namespace Zed.Unity.Editor
         /// </summary>
         public static string FindZedExecutable()
         {
+            return ResolveLauncherPath(FindZedCandidate());
+        }
+
+        /// <summary>
+        /// Resolve a Zed path to the binary that parses command line arguments.
+        /// </summary>
+        private static string ResolveLauncherPath(string zedPath)
+        {
+            if (string.IsNullOrEmpty(zedPath))
+                return zedPath;
+
+            string directory = Path.GetDirectoryName(zedPath);
+            if (string.IsNullOrEmpty(directory))
+                return zedPath;
+
+            string cliPath = Path.Combine(directory, "bin", Path.GetFileName(zedPath));
+            return File.Exists(cliPath) ? cliPath : zedPath;
+        }
+
+        private static string FindZedCandidate()
+        {
             string[] possiblePaths = GetPossibleZedPaths();
 
             foreach (string path in possiblePaths)

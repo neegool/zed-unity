@@ -191,7 +191,11 @@ namespace Zed.Unity.Editor
         /// </summary>
         public void Initialize(string editorInstallationPath)
         {
-            ZedConfig.ZedPath = editorInstallationPath;
+            if (!ZedUtils.IsValidZedPath(ZedConfig.ZedPath))
+            {
+                ZedConfig.ZedPath = ZedUtils.FindZedExecutable() ?? editorInstallationPath;
+            }
+
             ZedProjectSettings.EnsureProjectSettings();
             FileSync.SetEnabled(ZedConfig.EnableFileSync);
         }
