@@ -40,6 +40,11 @@ namespace Zed.Unity.Editor
         /// </summary>
         public bool OpenProject(string filePath, int line, int column)
         {
+            if (!string.IsNullOrEmpty(filePath) && !IsSupportedFile(filePath))
+            {
+                return false;
+            }
+
             string zedPath = ZedConfig.ZedPath;
 
             if (string.IsNullOrEmpty(zedPath) || !File.Exists(zedPath))
