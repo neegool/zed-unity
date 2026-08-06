@@ -83,7 +83,7 @@ namespace Zed.Unity.Editor
 
             if (!string.IsNullOrEmpty(filePath))
             {
-                args.Append(" -a ");
+                args.Append(' ');
                 args.Append(ZedUtils.QuoteArgument(AppendLocation(filePath, line, column)));
             }
 
